@@ -155,7 +155,6 @@ After running ``minikube start`` on the remote host.
          - ORGANIZATIONS: "default,alice,atlas,cms,lhcb"
          - WDB_SOCKET_SERVER: "wdb"
          - WDB_NO_BROWSER_AUTO_OPEN: "True"
-         - FLASK_DEBUG: "1"
 
      reana-job-controller:
        type: "docker"
@@ -168,7 +167,6 @@ After running ``minikube start`` on the remote host.
          - REANA_STORAGE_BACKEND: "LOCAL"
          - WDB_SOCKET_SERVER: "wdb"
          - WDB_NO_BROWSER_AUTO_OPEN: "True"
-         - FLASK_DEBUG:  "1"
 
      reana-server:
        type: "docker"
@@ -180,7 +178,6 @@ After running ``minikube start`` on the remote host.
        environment:
          - WDB_SOCKET_SERVER: "wdb"
          - WDB_NO_BROWSER_AUTO_OPEN: "True"
-         - FLASK_DEBUG: "1"
 
      reana-message-broker:
        type: "docker"
@@ -204,7 +201,6 @@ After running ``minikube start`` on the remote host.
          - ZMQ_PROXY_CONNECT: tcp://zeromq-msg-proxy.default.svc.cluster.local:8667
          - WDB_SOCKET_SERVER: "wdb"
          - WDB_NO_BROWSER_AUTO_OPEN: "True"
-         - FLASK_DEBUG: "1"
 
      reana-workflow-engine-yadage:
        type: "docker"
