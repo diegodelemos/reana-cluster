@@ -143,8 +143,49 @@ Deploy on CERN infrastructure
             -subj "/CN=reana.cern.ch"
       $ kubectl create secret tls reana-ssl-secrets
             --key /tmp/tls.key --cert /tmp/tls.crt
+6. Create the shared volume:
 
-6. Since Python3 does not come by default we have to use the `slc` command to
+   .. code-block:: console
+
+      $ manila create --share-type "Geneva CephFS Testing"
+            --name reana cephfs 10
+      $ # wait until gets created
+      $ manila access-allow reana cephx reana-user
+      $ manila share-export-location-list reana-dev
+      +--------------------------------------+------------------------------------------------------------------------------------------------------------------+-----------+
+      | ID                                   | Path                                                                                                             | Preferred |
+      +--------------------------------------+------------------------------------------------------------------------------------------------------------------+-----------+
+      | 455rc38d-c1d2-4837-abba-76c25505bc02 | 142.143.144.45:5565,142.143.144.46:5565,142.143.144.47:5565/shared_volume/path                                   | False     |
+      +--------------------------------------+------------------------------------------------------------------------------------------------------------------+-----------+
+      $ manila access-list reana-dev
+      +--------------------------------------+-------------+------------+--------------+--------+------------------------------------------+----------------------------+----------------------------+
+      | id                                   | access_type | access_to  | access_level | state  | access_key                               | created_at                 | updated_at                 |
+      +--------------------------------------+-------------+------------+--------------+--------+------------------------------------------+----------------------------+----------------------------+
+      | bf2b1e34-abba-4096-9e4e-1aa4aacdc6d0 | cephx       | user       | rw           | active | ABBAffyBbad7fdsaAfepl4MFKabbse2/UFOR1A== | 2018-06-12T22:22:15.000000 | 2018-06-12T22:22:17.000000 |
+      +--------------------------------------+-------------+------------+--------------+--------+------------------------------------------+----------------------------+----------------------------+
+      $ echo -n ABBAffyBbad7fdsaAfepl4MFKabbse2/UFOR1A== | base64
+      QUJCQWZmeUJiYWQ3ZmRzYUFmZXBsNE1GS2FiYnNlMi9VRk9SMUE9PQ==
+      $ echo -n user | base64
+      dXNlcg==
+      $ # create a file which holds the secrets
+      $ cat ceph-secret.yaml
+      ---
+      apiVersion: v1
+      kind: Secret
+      metadata:
+      name: ceph-secret
+      data:
+      userID: dXNlcg==
+      userKey: QUJCQWZmeUJiYWQ3ZmRzYUFmZXBsNE1GS2FiYnNlMi9VRk9SMUE9PQ==
+      $ kubectl create -f ceph-secret.yaml
+      secret "ceph-secret" created
+
+   And set `root_path` variable to
+   `/share_volume/path` and cephfs monitor list with
+   `142.143.144.45:5565,142.143.144.46:5565,142.143.144.47:5565` in
+   `reana-cluster.yaml`. TODO make root_path cli parameter?
+
+7. Since Python3 does not come by default we have to use the `slc` command to
    activate it and we create a virtual environment for REANA:
 
    .. code-block:: console
@@ -153,7 +194,7 @@ Deploy on CERN infrastructure
       $ virtualenv reana
       $ source reana/bin/activate
 
-7. Install `reana-cluster` (since `reana-commons` is not yet released we have to
+8. Install `reana-cluster` (since `reana-commons` is not yet released we have to
    install it manually):
 
    .. code-block:: console
@@ -161,18 +202,26 @@ Deploy on CERN infrastructure
       (reana) $ pip install git+git://github.com/reanahub/reana-commons.git@master#egg=reana-commons
       (reana) $ pip install git+git://github.com/reanahub/reana-cluster.git@master#egg=reana-cluster
 
-8.  Set the database URI and instantiate REANA cluster:
+9. Set the database URI and instantiate REANA cluster:
 
    .. code-block:: console
 
       (reana) $ export REANA_SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://reana:reana@<db-server>:5432/reana
-      (reana) $ reana-cluster init
+      (reana) $ curl https://raw.githubusercontent.com/reanahub/reana-cluster/master/reana_cluster/configurations/reana-cluster.yaml
+            --output reana-cluster.yaml
+
+   Edit ``reana-cluster.yaml`` adding the ``cephfs_monitors`` and
+   ``root_path`` obtained in the step 5 and instatiate the cluster.
+
+   .. code-block:: console
+
+      (reana) $ reana-cluster -f reana-cluster.yaml --prod init
 
 9. Make REANA accessible from outside:
 
    .. code-block:: console
 
-      (reana) $ curl http://test-reana.cern.ch/api/ping
+      (reana) $ curl http://reana.cern.ch/api/ping
       {"message": "OK", "status": "200"}
 
 

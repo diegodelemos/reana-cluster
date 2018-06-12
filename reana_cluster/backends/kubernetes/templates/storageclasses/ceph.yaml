@@ -1,0 +1,17 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: csi-cephfs
+provisioner: csi-cephfsplugin
+parameters:
+  monitors: {{ CEPHFS_MONITORS|join(',') }}
+  provisionVolume: "false"
+
+  # Required if provisionVolume is set to false
+  rootPath: {{ROOT_PATH}}
+
+  # The secret has to contain user and/or admin credentials.
+  csiProvisionerSecretName: {{CEPHFS_SECRET_NAME}}
+  csiProvisionerSecretNameSpace: kube-system
+reclaimPolicy: Delete

@@ -4,6 +4,10 @@ cluster:
   db_config: &db_base_config
     - REANA_SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://reana:reana@db:5432/reana"
   root_path: "/tmp/reana"
+  cephfs_monitors:
+    - 128.142.36.227:6790
+    - 128.142.39.77:6790
+    - 128.142.39.144:6790
 
 components:
   reana-workflow-controller:
