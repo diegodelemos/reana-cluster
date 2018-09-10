@@ -2,16 +2,19 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: csi-cephfs
-provisioner: csi-cephfsplugin
+  name: manila-csicephfs-share
+provisioner: manila-provisioner
 parameters:
-  monitors: {{ CEPHFS_MONITORS|join(',') }}
+  type: "Geneva CephFS Testing"
+  zones: nova
+  osSecretName: os-trustee
+  osSecretNamespace: kube-system
+  protocol: CEPHFS
+  backend: csi-cephfs
+  csi-driver: csi-cephfsplugin
+  osShareID: 4559c38d-c112-4837-adb8-76c25505bc02
+  osShareAccessID: b52b1e44-dcfe-4096-9e4e-1aa9aaccc6d0
+  # monitors: {{ CEPHFS_MONITORS|join(',') }}
   provisionVolume: "false"
-
-  # Required if provisionVolume is set to false
   rootPath: {{ROOT_PATH}}
-
-  # The secret has to contain user and/or admin credentials.
-  csiProvisionerSecretName: {{CEPHFS_SECRET_NAME}}
-  csiProvisionerSecretNameSpace: kube-system
 reclaimPolicy: Delete

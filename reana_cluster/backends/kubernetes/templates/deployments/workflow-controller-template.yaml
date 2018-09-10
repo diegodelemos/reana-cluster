@@ -53,7 +53,7 @@ spec:
       - name: reana-shared-volume
         {% if DEPLOYMENT == 'prod' %}
         persistentVolumeClaim:
-          claimName: csi-cephfs-pvc
+          claimName: manila-cephfs-pvc
           readOnly: false
         {% else %}
         hostPath:

@@ -2,11 +2,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: csi-cephfs-pvc
+  name: manila-cephfs-pvc
 spec:
   accessModes:
   - ReadWriteMany
   resources:
     requests:
-      storage: 1Gi
-  storageClassName: csi-cephfs
+      storage: 10Gi
+  storageClassName: manila-csicephfs-share
