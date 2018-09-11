@@ -7,13 +7,13 @@ provisioner: manila-provisioner
 parameters:
   type: "Geneva CephFS Testing"
   zones: nova
-  osSecretName: os-trustee
-  osSecretNamespace: kube-system
+  osSecretName: ceph-secret
+  osSecretNamespace: default
   protocol: CEPHFS
   backend: csi-cephfs
   csi-driver: csi-cephfsplugin
-  osShareID: 4559c38d-c112-4837-adb8-76c25505bc02
-  osShareAccessID: b52b1e44-dcfe-4096-9e4e-1aa9aaccc6d0
+  os-shareID: #
+  os-shareAccessID: #
   # monitors: {{ CEPHFS_MONITORS|join(',') }}
   provisionVolume: "false"
   rootPath: {{ROOT_PATH}}
