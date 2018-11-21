@@ -14,7 +14,8 @@ spec:
       - name: job-controller
         image: {{JOB_CONTROLLER_IMAGE}}
         {% if DEPLOYMENT != 'prod' %}
-        command: ["flask", "run", "-h", "0.0.0.0"]
+        command: ["/bin/sh","-c"]
+        args: ["python reana_job_controller/app.py"]
         {% endif %}
         imagePullPolicy: {{IMAGE_PULL_POLICY}}
         {%- if DEPLOYMENT != 'prod' %}
