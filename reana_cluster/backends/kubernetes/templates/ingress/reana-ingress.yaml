@@ -20,6 +20,10 @@ spec:
         backend:
           serviceName: server
           servicePort: 80
+      - path: /gitlab
+        backend:
+          serviceName: server
+          servicePort: 80
       - path: /account
         backend:
           serviceName: server
