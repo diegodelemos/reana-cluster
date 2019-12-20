@@ -1,0 +1,35 @@
+{{- if .Values.cephfs.enabled }}
+# The # should be replaced with the
+# manila share ID and share access ID
+# obtained when creating them
+# following the instructions in:
+# https://clouddocs.web.cern.ch/clouddocs/containers/tutorials/cephfs.html
+---
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    name: {{ .Release.Name }}-cephfs
+  provisioner: {{ .Values.cephfs.provisioner }}
+  parameters:
+    type: {{ .Values.cephfs.type }}
+    zones: {{ .Values.cephfs.zone }}
+    osSecretName: {{ .Values.cephfs.os_necret_name }}
+    osSecretNamespace: {{ .Values.cephfs.os_necret_namespace }}
+    protocol: CEPHFS
+    backend: csi-cephfs
+    csi-driver: cephfs.csi.ceph.com
+    osShareID: {{ .Values.cephfs.cephfs_os_share_id }}
+    osShareAccessID: {{ .Values.cephfs.cephfs_os_share_access_id }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-cephfs
+spec:
+  accessModes:
+  - {{ .Values.cephfs.access_modes }}
+  resources:
+    requests:
+      storage: {{ .Values.cephfs.cephfs_volume_size }}G
+  storageClassName: {{ .Release.Name }}-cephfs
+{{- end }}

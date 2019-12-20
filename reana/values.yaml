@@ -1,0 +1,78 @@
+# Default values for reana.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# TODO Document this shuld be set for third party integrations and for
+# production deployments due to security issues.
+# reana_url: reana.cern.ch
+
+# Storage configuration
+debug:
+  enabled: false
+ui:
+  enabled: false
+eos:
+  enabled: false
+# CERN specific for now
+cephfs:
+  enabled: false
+  cephfs_volume_size: 200
+  access_modes: ReadWriteMany
+  provisioner: manila-provisioner
+  type: "Geneva CephFS Testing"
+  os_necret_name: os-trustee
+  os_necret_namespace: kube-system
+  cephfs_os_share_id: <cephfs-share-id>
+  cephfs_os_share_access_id: <cephfs-share-access-id>
+
+# External database service configuration
+db_config: &db_base_config
+  - REANA_DB_NAME: "reana"
+  - REANA_DB_HOST: "db"
+  - REANA_DB_PORT: "5432"
+
+# Filesystem related configuration variables
+volume_paths:
+  root_path: "/var/reana"
+  shared_volume_path: "/var/reana"
+  db_persistence_path: "/var/reana/db"
+
+# REANA components configuration
+components:
+  reana_workflow_controller:
+    imagePullPolicy: IfNotPresent
+    image: reanahub/reana-workflow-controller:latest
+    environment:
+      - "<<": *db_base_config
+      - SHARED_VOLUME_PATH: /var/reana
+      - REANA_JOB_CONTROLLER_IMAGE: reanahub/reana-job-controller:0.6.0
+      - REANA_WORKFLOW_ENGINE_IMAGE_CWL: reanahub/reana-workflow-engine-cwl:0.6.0
+      - REANA_WORKFLOW_ENGINE_IMAGE_YADAGE: reanahub/reana-workflow-engine-yadage:0.6.0
+      - REANA_WORKFLOW_ENGINE_IMAGE_SERIAL: reanahub/reana-workflow-engine-serial:0.6.0
+
+  reana_server:
+    imagePullPolicy: IfNotPresent
+    image: reanahub/reana-server:0.6.0
+    environment:
+      - "<<": *db_base_config
+
+  reana_message_broker:
+    imagePullPolicy: IfNotPresent
+    image: reanahub/reana-message-broker:0.6.0
+
+  reana_ui:
+    imagePullPolicy: IfNotPresent
+    image: reanahub/reana-ui:0.6.0
+
+# Accessing the cluster from outside world
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.frontend.entryPoints: "http,https"
+
+# Permissions
+serviceAccount:
+  create: true
+  name: reana
+  namespace: default
