@@ -42,6 +42,10 @@ spec:
         stdin: true
         {{- end }}
         volumeMounts:
+          {{- if .Values.debug.enabled }}
+          - mountPath: /code
+            name: reana-code
+          {{- end }}
           - mountPath: {{ .Values.volume_paths.shared_volume_path }}
             name: reana-shared-volume
         env:
@@ -89,6 +93,10 @@ spec:
         imagePullPolicy: {{ .Values.components.reana_workflow_controller.imagePullPolicy }}
         command: ["flask", "consume-job-queue"]
         volumeMounts:
+          {{- if .Values.debug.enabled }}
+          - mountPath: /code
+            name: reana-code
+          {{- end }}
           - mountPath: {{ .Values.volume_paths.shared_volume_path }}
             name: reana-shared-volume
         env:
@@ -126,3 +134,8 @@ spec:
         hostPath:
           path: {{ .Values.volume_paths.root_path }}
         {{- end }}
+      {{- if .Values.debug.enabled }}
+      - name: reana-code
+        hostPath:
+          path: /code/reana-workflow-controller
+      {{- end }}

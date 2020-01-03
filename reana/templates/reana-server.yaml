@@ -42,8 +42,12 @@ spec:
         stdin: true
         {{- end }}
         volumeMounts:
-        - mountPath: {{ .Values.volume_paths.shared_volume_path }}
-          name: reana-shared-volume
+          {{- if .Values.debug.enabled }}
+          - mountPath: /code/
+            name: reana-code
+          {{- end }}
+          - mountPath: {{ .Values.volume_paths.shared_volume_path }}
+            name: reana-shared-volume
         env:
         {{- range $key, $value := .Values.db_env_config }}
         - name: {{ $key }}
@@ -99,6 +103,10 @@ spec:
         imagePullPolicy: {{ .Values.components.reana_server.imagePullPolicy }}
         command: ["flask", "start-scheduler"]
         volumeMounts:
+          {{- if .Values.debug.enabled }}
+          - mountPath: /code/
+            name: reana-code
+          {{- end }}
           - mountPath: {{ .Values.volume_paths.shared_volume_path }}
             name: reana-shared-volume
         env:
@@ -128,4 +136,8 @@ spec:
         hostPath:
           path:  {{ .Values.volume_paths.root_path }}
         {{- end }}
-
+      {{- if .Values.debug.enabled }}
+      - name: reana-code
+        hostPath:
+          path: /code/reana-server
+      {{- end }}
