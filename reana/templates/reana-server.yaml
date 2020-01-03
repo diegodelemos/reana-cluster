@@ -45,6 +45,14 @@ spec:
         - mountPath: {{ .Values.volume_paths.shared_volume_path }}
           name: reana-shared-volume
         env:
+        {{- range $key, $value := .Values.db_env_config }}
+        - name: {{ $key }}
+          value: {{ $value }}
+        {{- end }}
+        {{- range $key, $value := .Values.components.reana_server.environment }}
+        - name: {{ $key }}
+          value: "{{ $value }}"
+        {{- end }}
         {{- if .Values.reana_url }}
         - name: REANA_URL
           value: {{ .Values.reana_url }}
@@ -94,6 +102,10 @@ spec:
           - mountPath: {{ .Values.volume_paths.shared_volume_path }}
             name: reana-shared-volume
         env:
+        {{- range $key, $value := .Values.components.reana_server.environment }}
+        - name: {{ $key }}
+          value: "{{ $value }}"
+        {{- end }}
         {{- if not .Values.debug.enabled }}
         - name: REANA_DB_USERNAME
           valueFrom:

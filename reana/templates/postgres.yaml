@@ -36,7 +36,7 @@ spec:
           value: "Europe/Zurich"
         - name: POSTGRES_DB
           value: reana
-        {{- if .Values.debug.enabled }}
+        {{- if not .Values.debug.enabled }}
         - name: POSTGRES_USER
           value: reana
         - name: POSTGRES_PASSWORD

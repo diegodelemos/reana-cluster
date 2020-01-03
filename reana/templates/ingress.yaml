@@ -24,47 +24,46 @@ spec:
 {{- end }}
   rules:
     - http:
-      paths:
-      {{- if .Values.ui.enabled }}
+        paths:
+        - path: /api
+          backend:
+            serviceName: server
+            servicePort: 80
+        - path: /oauth
+          backend:
+            serviceName: server
+            servicePort: 80
+        - path: /account
+          backend:
+            serviceName: server
+            servicePort: 80
+        - path: /lost-password
+          backend:
+            serviceName: server
+            servicePort: 80
+        - path: /confirm
+          backend:
+            serviceName: server
+            servicePort: 80
+        - path: /login
+          backend:
+            serviceName: server
+            servicePort: 80
+        - path: /logout
+          backend:
+            serviceName: server
+            servicePort: 80
+        - path: /sign-up
+          backend:
+            serviceName: server
+            servicePort: 80
+        {{- if .Values.ui.enabled }}
         - path: /
           backend:
             serviceName: ui
             servicePort: 80
-      {%- endif %}
-      - path: /api
-        backend:
-          serviceName: server
-          servicePort: 80
-      - path: /oauth
-        backend:
-          serviceName: server
-          servicePort: 80
-      - path: /account
-        backend:
-          serviceName: server
-          servicePort: 80
-      - path: /lost-password
-        backend:
-          serviceName: server
-          servicePort: 80
-      - path: /confirm
-        backend:
-          serviceName: server
-          servicePort: 80
-      - path: /login
-        backend:
-          serviceName: server
-          servicePort: 80
-      - path: /logout
-        backend:
-          serviceName: server
-          servicePort: 80
-      - path: /sign-up
-        backend:
-          serviceName: server
-          servicePort: 80
-    {{- if .Values.reana_url }}
+        {{- end }}
+      {{- if .Values.reana_url }}
       host: {{ .Values.reana_url }}
-    {{- end }}
-  {{- end }}
+      {{- end }}
 {{- end }}

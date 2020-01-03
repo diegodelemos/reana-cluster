@@ -45,11 +45,19 @@ spec:
           - mountPath: {{ .Values.volume_paths.shared_volume_path }}
             name: reana-shared-volume
         env:
+        {{- range $key, $value := .Values.db_env_config }}
+        - name: {{ $key }}
+          value: {{ $value }}
+        {{- end }}
+        {{- range $key, $value := .Values.components.reana_workflow_controller.environment }}
+        - name: {{ $key }}
+          value: "{{ $value }}"
+        {{- end }}
         - name: K8S_REANA_SERVICE_ACCOUNT_NAME
           value: {{ .Values.serviceAccount.name }}
         {{- if .Values.reana_url }}
-          - name: REANA_URL
-            value: {{ .Values.reana_url }}
+        - name: REANA_URL
+          value: {{ .Values.reana_url }}
         {{- end }}
         {{- if .Values.eos.enabled }}
         - name: K8S_CERN_EOS_AVAILABLE
@@ -59,7 +67,7 @@ spec:
         - name: REANA_STORAGE_BACKEND
           value: "cephfs"
         {{ end }}
-        {{- if .Values.debug.enabled }}
+        {{- if not .Values.debug.enabled }}
         - name: REANA_DB_USERNAME
           valueFrom:
             secretKeyRef:
@@ -84,11 +92,19 @@ spec:
           - mountPath: {{ .Values.volume_paths.shared_volume_path }}
             name: reana-shared-volume
         env:
-        {{- if .Values.reana_url }}
-          - name: REANA_URL
-            value: {{ .Values.reana_url }}
+        {{- range $key, $value := .Values.db_env_config }}
+        - name: {{ $key }}
+          value: {{ $value }}
         {{- end }}
-        {{- if .Values.debug.enabled }}
+        {{- range $key, $value := .Values.components.reana_workflow_controller.environment }}
+        - name: {{ $key }}
+          value: "{{ $value }}"
+        {{- end }}
+        {{- if .Values.reana_url }}
+        - name: REANA_URL
+          value: {{ .Values.reana_url }}
+        {{- end }}
+        {{- if not .Values.debug.enabled }}
         - name: REANA_DB_USERNAME
           valueFrom:
             secretKeyRef:
