@@ -36,7 +36,7 @@ reana_env_exportable_info_components = ['reana-server']
 
 reana_cluster_ready_necessary_components = ['workflow-controller',
                                             'message-broker',
-                                            'server']
+                                            'reana-server']
 """Components which must be running for the cluster status to be ready."""
 
 traefik_release_name = 'reana-traefik'

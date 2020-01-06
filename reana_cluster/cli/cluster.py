@@ -113,7 +113,7 @@ def env(ctx, namespace, insecure_url, include_admin_token, server_hostname):
                 'SELECT access_token FROM user_']
             sql_query_result = \
                 ctx.obj.backend.exec_into_component(
-                    'db',
+                    'reana-db',
                     get_admin_token_sql_query_cmd)
             # We get the token from the SQL query result
             admin_access_token = sql_query_result.splitlines()[2].strip()

@@ -676,14 +676,6 @@ class KubernetesBackend(ReanaBackendABC):
         }
 
         try:
-
-            # Strip reana-prefix from component name if it is there.
-            component_name_without_prefix = None
-            if not component_name.startswith('reana-'):
-                component_name_without_prefix = component_name
-            else:
-                component_name_without_prefix = component_name[len('reana-'):]
-
             minikube_ip = None
 
             # If running on Minikube, ip-address is Minikube VM-address
@@ -702,7 +694,7 @@ class KubernetesBackend(ReanaBackendABC):
 
             # Get ip-addresses and ports of the component (K8S service)
             comp = self._corev1api.read_namespaced_service(
-                component_name_without_prefix,
+                component_name,
                 component_namespace)
 
             logging.debug(comp)
@@ -711,7 +703,7 @@ class KubernetesBackend(ReanaBackendABC):
                 comp.spec.external_i_ps
             comp_info['internal_ip'] = comp.spec.external_i_ps
 
-            if component_name_without_prefix == 'server':
+            if component_name == 'server':
                 traefik_ports = self.get_traefik_ports()
             else:
                 traefik_ports = None
@@ -1006,13 +998,6 @@ class KubernetesBackend(ReanaBackendABC):
             the component.
         :return: Returns a string which represents the output of the command.
         """
-        available_components = [manifest['metadata']['name'] for manifest in
-                                self.cluster_conf
-                                if manifest['kind'] == 'Deployment']
-
-        if component_name not in available_components:
-            raise Exception('{0} does not exist.'.format(component_name))
-
         component_pod_name = subprocess.check_output([
             'kubectl', 'get', 'pods',
             '-l=app={component_name}'.format(component_name=component_name),
